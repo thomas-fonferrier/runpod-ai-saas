@@ -1,0 +1,7 @@
+runpod==1.7.9
+torch==2.4.1
+torchaudio==2.4.1
+TTS==0.22.0
+huggingface_hub==0.26.2
+numpy==1.26.4
+soundfile==0.12.1

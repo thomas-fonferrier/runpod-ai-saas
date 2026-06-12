@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flux-worker
+  namespace: ai-workers
+  labels:
+    app: flux-worker
+spec:
+  # Replicas are managed by the HPA; set a sensible initial value.
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flux-worker
+  template:
+    metadata:
+      labels:
+        app: flux-worker
+    spec:
+      # Tolerate GPU-tainted nodes (RunPod GPU nodes are typically tainted)
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+      containers:
+        - name: flux-worker
+          image: ${DOCKERHUB_USERNAME}/runpod-flux:latest
+          imagePullPolicy: Always
+
+          resources:
+            limits:
+              nvidia.com/gpu: "1"
+              memory: "40Gi"
+            requests:
+              nvidia.com/gpu: "1"
+              memory: "20Gi"
+
+          env:
+            - name: MODEL_PATH
+              value: "/runpod-volume/models/flux"
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ai-worker-secrets
+                  key: hf_token
+            - name: RUNPOD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-worker-secrets
+                  key: runpod_api_key
+
+          ports:
+            - containerPort: 8000
+
+          volumeMounts:
+            - name: model-storage
+              mountPath: /runpod-volume
+
+          # Allow generous time for model loading on cold start
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            failureThreshold: 60
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+
+      volumes:
+        - name: model-storage
+          persistentVolumeClaim:
+            claimName: model-pvc

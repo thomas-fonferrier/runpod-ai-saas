@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xtts-worker
+  namespace: ai-workers
+  labels:
+    app: xtts-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xtts-worker
+  template:
+    metadata:
+      labels:
+        app: xtts-worker
+    spec:
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+      containers:
+        - name: xtts-worker
+          image: ${DOCKERHUB_USERNAME}/runpod-xtts:latest
+          imagePullPolicy: Always
+
+          resources:
+            limits:
+              nvidia.com/gpu: "1"
+              memory: "16Gi"
+            requests:
+              nvidia.com/gpu: "1"
+              memory: "8Gi"
+
+          env:
+            - name: MODEL_PATH
+              value: "/runpod-volume/models/xtts"
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ai-worker-secrets
+                  key: hf_token
+            - name: RUNPOD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-worker-secrets
+                  key: runpod_api_key
+            - name: COQUI_TOS_AGREED
+              value: "1"
+
+          ports:
+            - containerPort: 8000
+
+          volumeMounts:
+            - name: model-storage
+              mountPath: /runpod-volume
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            failureThreshold: 60
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+
+      volumes:
+        - name: model-storage
+          persistentVolumeClaim:
+            claimName: model-pvc

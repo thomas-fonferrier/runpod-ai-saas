@@ -1,0 +1,15 @@
+# Persistent Volume Claim for shared model storage.
+# On RunPod Kubernetes this maps to a RunPod Network Volume.
+# Adjust storageClassName to match your cluster's provisioner.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-pvc
+  namespace: ai-workers
+spec:
+  accessModes:
+    - ReadWriteMany   # all workers read concurrently
+  storageClassName: runpod-network-volume   # set by the RunPod CSI driver
+  resources:
+    requests:
+      storage: 100Gi

@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Models (never commit weights)
+/runpod-volume/
+*.safetensors
+*.bin
+*.gguf
+*.ckpt
+*.pt
+*.pth
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets — DO NOT commit
+kubernetes/secrets.yaml
+orchestrator/.env

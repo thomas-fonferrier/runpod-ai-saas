@@ -91,14 +91,6 @@ Push any branch or tag to trigger GitHub Actions:
 git push origin main
 ```
 
-Alternatively build locally:
-
-```bash
-# Example for FLUX worker
-docker build -t your-user/runpod-flux:latest workers/flux/
-docker push your-user/runpod-flux:latest
-```
-
 ### 5. Create RunPod Serverless Endpoints
 
 For each worker, go to **RunPod → Serverless → New Endpoint** and set:

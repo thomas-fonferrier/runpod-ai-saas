@@ -30,7 +30,7 @@ A production-ready deployment of three AI generation models on [RunPod.io](https
 
 ## Models
 
-| Model | Task | GPU VRAM | Approx. Size |
+| Model | Task | GPU VRAM | Approx.Size |
 |---|---|---|---|
 | [FLUX.1-schnell](https://huggingface.co/black-forest-labs/FLUX.1-schnell) | Text → Image | 16 GB+ | ~23 GB |
 | [LTX-Video](https://huggingface.co/Lightricks/LTX-Video) | Image → Video | 24 GB+ | ~12 GB |

@@ -57,7 +57,7 @@ A production-ready deployment of three AI generation models on [RunPod.io](https
 
 ### 1. Prerequisites
 
-- RunPod account with API key → [console.runpod.io](https://console.runpod.io)
+- RunPod account with API key and **at least $5 balance** → [console.runpod.io](https://console.runpod.io) ([add credits](https://www.runpod.io/console/user/billing))
 - Docker Hub account (or GHCR)
 - `runpodctl` CLI: `brew install runpod/runpodctl/runpodctl`
 - HuggingFace account + token (for gated models)
@@ -81,7 +81,7 @@ cd scripts/
 bash setup_network_volume.sh
 ```
 
-This creates a shared 100 GB network volume and downloads all model weights onto it. Workers mount this volume at `/runpod-volume` so cold-starts load in seconds instead of minutes.
+This creates a shared 200 GB network volume and downloads all model weights onto it (FLUX alone is ~58 GB). Workers mount this volume at `/runpod-volume` so cold-starts load in seconds instead of minutes.
 
 ### 4. Push Docker Images
 
